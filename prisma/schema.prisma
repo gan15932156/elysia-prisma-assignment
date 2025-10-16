@@ -2,6 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 // https://www.prisma.io/docs/orm/prisma-client/queries/relation-queries
+// https://dev.to/tahsin000/standardized-response-and-global-error-handling-in-nextjs-api-routes-with-prisma-and-zod-2762
+// https://www.adarsha.dev/blog/elysia-uniform-response
 
 generator client {
   provider = "prisma-client-js"
@@ -21,18 +23,35 @@ generator prismabox {
   output   = "../generated/prismabox"
 } 
 
-model User {
-  id    String  @id @default(cuid())
-  email String  @unique
-  name  String?
-  posts Post[]
+enum Status {
+  CHARGING
+  AVAILABLE
 }
 
-model Post {
-  id    	String  @id @default(cuid())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  String
+model Station{
+  id        String  @id @default(cuid())
+  name      String
+  location  String
+  chargers  Charger[]
+}
+
+model Charger{
+  id            String  @id @default(cuid())
+  model         String
+  connectorType String
+  station       Station    @relation(fields: [stationId], references: [id])
+  stationId     String
+  sessions      Session[]
+  status        Status  @default(AVAILABLE)
+}
+
+model Session{  
+  id            String     @id @default(cuid())
+  startTime     DateTime   @default(now())
+  endTime       DateTime?
+  energyUsedKWh Float?
+  pricePerKWh   Float
+  totalCost     Float?
+  charger       Charger    @relation(fields: [chargerId], references: [id])
+  chargerId     String
 }
