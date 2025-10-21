@@ -1,10 +1,8 @@
-import Elysia, { t } from "elysia";
-import {
-  StationPlain,
-  StationPlainInputCreate,
-  StationPlainInputUpdate,
-} from "../../generated/prismabox/Station";
+import Elysia from "elysia";
 import { addHandler, getAllhandler, updateHandler } from "./handler";
+import { StationSchema, StationUpdateSchema } from "../schemas/station.schema";
+import { formatResponseSchema } from "../utils/format-response";
+import z from "zod";
 
 export const station = new Elysia({ prefix: "/station" })
   .post(
@@ -12,7 +10,10 @@ export const station = new Elysia({ prefix: "/station" })
     async ({ body }) => {
       return await addHandler(body);
     },
-    { body: StationPlainInputCreate }
+    {
+      body: StationSchema,
+      response: formatResponseSchema(StationSchema),
+    }
   )
   .get(
     "/",
@@ -20,9 +21,7 @@ export const station = new Elysia({ prefix: "/station" })
       return await getAllhandler();
     },
     {
-      response: {
-        200: t.Array(StationPlain),
-      },
+      response: formatResponseSchema(z.array(StationSchema)),
     }
   )
   .put(
@@ -31,6 +30,6 @@ export const station = new Elysia({ prefix: "/station" })
       return await updateHandler(id, body);
     },
     {
-      body: StationPlainInputUpdate,
+      body: StationUpdateSchema,
     }
   );

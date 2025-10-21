@@ -15,14 +15,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-generator prismabox { 
-  provider = "prismabox"
-  typeboxImportDependencyName = "elysia"
-  typeboxImportVariableName = "t"
-  inputModel = true
-  output   = "../generated/prismabox"
-} 
-
 enum Status {
   CHARGING
   AVAILABLE

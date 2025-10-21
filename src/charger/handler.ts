@@ -1,16 +1,9 @@
-import {
-  ChargerPlain,
-  ChargerInputCreate,
-} from "../../generated/prismabox/Charger";
 import { PrismaClient } from "../generated/prisma";
-
-type ChargerPlaintResponse = typeof ChargerPlain.static;
+import { Charger } from "../schemas/charger.schema";
 
 const prisma = new PrismaClient();
 
-const addHandler = async (
-  data: typeof ChargerInputCreate.static
-): Promise<ChargerPlaintResponse | null> => {
+const addHandler = async (data: Charger): Promise<Charger | null> => {
   try {
     const response = await prisma.charger.create({ data: data });
     return response;
@@ -19,7 +12,7 @@ const addHandler = async (
   }
 };
 
-const getAllhandler = async (): Promise<Array<ChargerPlaintResponse>> => {
+const getAllhandler = async (): Promise<Array<Charger>> => {
   try {
     const response = await prisma.charger.findMany();
     return response;

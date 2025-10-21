@@ -1,23 +1,19 @@
-import {
-  SessionInputCreate,
-  SessionPlain,
-} from "../../generated/prismabox/Session";
 import { PrismaClient } from "../generated/prisma";
+import { Session } from "../schemas/session.schema";
 
 const prisma = new PrismaClient();
 
-type SessionResponse = typeof SessionPlain.static;
-
-const addHandler = async (data: typeof SessionInputCreate.static) => {
+const addHandler = async (data: Session) => {
   try {
     const charger = await prisma.charger.findUnique({
-      where: { id: data.charger.connect.id },
+      where: { id: data.chargerId },
     });
     if (!charger) {
-      return { error: false, message: "Not found charger.", data: {} };
+      // return { error: false, message: "Not found charger.", data: {} };
+      throw new Error("Not found charger data.");
     }
     if (charger.status === "CHARGING") {
-      return { error: false, message: "Charger not available.", data: {} };
+      throw new Error("Charger not available.");
     }
     const [_, session] = await prisma.$transaction([
       prisma.charger.update({
@@ -36,10 +32,11 @@ const addHandler = async (data: typeof SessionInputCreate.static) => {
   }
 };
 
-const getAllhandler = async (): Promise<Array<SessionResponse>> => {
+const getAllhandler = async (): Promise<Array<Session>> => {
   try {
     const response = await prisma.session.findMany();
-    return response;
+    console.log(response);
+    return [];
   } catch (error) {
     throw error;
   }

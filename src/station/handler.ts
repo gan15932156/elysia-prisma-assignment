@@ -1,17 +1,9 @@
 import { PrismaClient } from "../generated/prisma";
-import {
-  StationPlainInputCreate,
-  StationPlain,
-  StationPlainInputUpdate,
-} from "./../../generated/prismabox/Station";
-
-type StationPlainResponse = typeof StationPlain.static;
+import { Station, StationUpdate } from "../schemas/station.schema";
 
 const prisma = new PrismaClient();
 
-const addHandler = async (
-  data: typeof StationPlainInputCreate.static
-): Promise<StationPlainResponse | null> => {
+const addHandler = async (data: Station): Promise<Station | null> => {
   try {
     const response = await prisma.station.create({ data: data });
     return response;
@@ -20,7 +12,7 @@ const addHandler = async (
   }
 };
 
-const getAllhandler = async (): Promise<Array<StationPlainResponse>> => {
+const getAllhandler = async (): Promise<Array<Station>> => {
   try {
     const response = await prisma.station.findMany();
     return response;
@@ -31,8 +23,8 @@ const getAllhandler = async (): Promise<Array<StationPlainResponse>> => {
 
 const updateHandler = async (
   id: string,
-  data: typeof StationPlainInputUpdate.static
-): Promise<StationPlainResponse | null> => {
+  data: StationUpdate
+): Promise<Station | null> => {
   try {
     const response = await prisma.station.update({
       where: {

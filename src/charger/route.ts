@@ -1,26 +1,19 @@
-import Elysia, { t } from "elysia";
-import {
-  ChargerInputCreate,
-  ChargerPlain,
-} from "../../generated/prismabox/Charger";
+import Elysia from "elysia";
 import { addHandler, getAllhandler } from "./handler";
+import { ChargerSchema } from "../schemas/charger.schema";
+import { formatResponseSchema } from "../utils/format-response";
+import z from "zod";
 
-// const test: tt = {
-//   connectorType: "adds",
-//   model: "ad",
-//   station: {
-//     connect: {
-//       id: "adadad",
-//     },
-//   },
-// };
-export const charger = new Elysia({ prefix: "/charger" })
+export const charger = new Elysia({
+  prefix: "/charger",
+  detail: { tags: ["Charger"] },
+})
   .post(
     "/",
     async ({ body }) => {
       return await addHandler(body);
     },
-    { body: ChargerInputCreate }
+    { body: ChargerSchema, response: formatResponseSchema(ChargerSchema) }
   )
   .get(
     "/",
@@ -28,8 +21,6 @@ export const charger = new Elysia({ prefix: "/charger" })
       return await getAllhandler();
     },
     {
-      response: {
-        200: t.Array(ChargerPlain),
-      },
+      response: formatResponseSchema(z.array(ChargerSchema)),
     }
   );

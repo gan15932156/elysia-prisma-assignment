@@ -1,22 +1,27 @@
 import { Elysia } from "elysia";
+import {
+  useErrorMiddleware,
+  useSuccessResponseMiddleware,
+} from "./middleware/response.middleware";
 import { station } from "./station/route";
-import { Prisma } from "./generated/prisma";
-import { charger } from "./charger/route";
 import { session } from "./session/route";
+import { charger } from "./charger/route";
+import openapi from "@elysiajs/openapi";
+import z from "zod";
 
 const app = new Elysia()
-  .onError(({ error, code }) => {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      console.log(error.message, code);
-      return { error: true, message: "prisma error" };
-    } else {
-      console.log(error);
-      return { error: true, message: "An other error" };
-    }
-  })
-  .use(station)
-  .use(charger)
+  .use(
+    openapi({
+      mapJsonSchema: {
+        zod: z.toJSONSchema,
+      },
+    })
+  )
+  .use(useSuccessResponseMiddleware)
+  .use(useErrorMiddleware)
   .use(session)
+  .use(charger)
+  .use(station)
   .listen(3000);
 
 console.log(
