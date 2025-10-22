@@ -1,6 +1,10 @@
 import Elysia from "elysia";
 import { addHandler, getAllhandler, updateHandler } from "./handler";
-import { StationSchema, StationUpdateSchema } from "../schemas/station.schema";
+import {
+  CreateStationSchema,
+  StationSchema,
+  StationUpdateSchema,
+} from "../schemas/station.schema";
 import { formatResponseSchema } from "../utils/format-response";
 import z from "zod";
 
@@ -11,7 +15,7 @@ export const station = new Elysia({ prefix: "/station" })
       return await addHandler(body);
     },
     {
-      body: StationSchema,
+      body: CreateStationSchema,
       response: formatResponseSchema(StationSchema),
     }
   )

@@ -11,12 +11,12 @@ export const ChargerSchema = z.object({
   stationId: z.string(),
   status: Status.default("AVAILABLE"),
 });
-
 export type Charger = z.infer<typeof ChargerSchema>;
 
-export const ChargerUpdateSchema = ChargerSchema.omit({
-  id: true,
-}).partial();
+export const CreateChargerSchema = ChargerSchema.omit({ id: true });
+export type CreateCharger = z.infer<typeof CreateChargerSchema>;
+
+export const ChargerUpdateSchema = CreateChargerSchema.partial();
 export type ChargerUpdate = z.infer<typeof ChargerUpdateSchema>;
 
 export const ChargerWithDetailSchema = ChargerSchema.extend({

@@ -1,9 +1,10 @@
+import { CreateStation } from "./../schemas/station.schema";
 import { PrismaClient } from "../generated/prisma";
 import { Station, StationUpdate } from "../schemas/station.schema";
 
 const prisma = new PrismaClient();
 
-const addHandler = async (data: Station): Promise<Station | null> => {
+const addHandler = async (data: CreateStation): Promise<Station | null> => {
   try {
     const response = await prisma.station.create({ data: data });
     return response;

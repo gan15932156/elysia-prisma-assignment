@@ -1,9 +1,9 @@
 import { PrismaClient } from "../generated/prisma";
-import { Charger } from "../schemas/charger.schema";
+import { Charger, CreateCharger } from "../schemas/charger.schema";
 
 const prisma = new PrismaClient();
 
-const addHandler = async (data: Charger): Promise<Charger | null> => {
+const addHandler = async (data: CreateCharger): Promise<Charger | null> => {
   try {
     const response = await prisma.charger.create({ data: data });
     return response;

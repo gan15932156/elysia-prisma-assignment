@@ -1,6 +1,6 @@
 import Elysia from "elysia";
 import { addHandler, getAllhandler } from "./handler";
-import { ChargerSchema } from "../schemas/charger.schema";
+import { ChargerSchema, CreateChargerSchema } from "../schemas/charger.schema";
 import { formatResponseSchema } from "../utils/format-response";
 import z from "zod";
 
@@ -13,7 +13,7 @@ export const charger = new Elysia({
     async ({ body }) => {
       return await addHandler(body);
     },
-    { body: ChargerSchema, response: formatResponseSchema(ChargerSchema) }
+    { body: CreateChargerSchema, response: formatResponseSchema(ChargerSchema) }
   )
   .get(
     "/",

@@ -1,15 +1,14 @@
-import { PrismaClient } from "../generated/prisma";
-import { Session } from "../schemas/session.schema";
+import { Prisma, PrismaClient } from "../generated/prisma";
+import { CreateSession, Session } from "../schemas/session.schema";
 
 const prisma = new PrismaClient();
 
-const addHandler = async (data: Session) => {
+const addHandler = async (data: CreateSession): Promise<Session> => {
   try {
     const charger = await prisma.charger.findUnique({
       where: { id: data.chargerId },
     });
     if (!charger) {
-      // return { error: false, message: "Not found charger.", data: {} };
       throw new Error("Not found charger data.");
     }
     if (charger.status === "CHARGING") {
@@ -26,7 +25,20 @@ const addHandler = async (data: Session) => {
       }),
       prisma.session.create({ data: data }),
     ]);
-    return session;
+    const dataStartTimeObj = session.startTime
+      ? new Date(session.startTime)
+      : null;
+    const dataEndTimeObj = session.endTime ? new Date(session.endTime) : null;
+    const newSession: Session = {
+      id: session.id,
+      chargerId: session.chargerId,
+      endTime: dataEndTimeObj?.toISOString() || null,
+      startTime: dataStartTimeObj?.toISOString() || undefined,
+      energyUsedKWh: session.energyUsedKWh,
+      pricePerKWh: session.pricePerKWh,
+      totalCost: session.totalCost,
+    };
+    return newSession;
   } catch (error) {
     throw error;
   }
@@ -35,11 +47,34 @@ const addHandler = async (data: Session) => {
 const getAllhandler = async (): Promise<Array<Session>> => {
   try {
     const response = await prisma.session.findMany();
-    console.log(response);
-    return [];
+    const newSession = transformSessions(response);
+    // console.log(newSession);
+    return newSession;
   } catch (error) {
     throw error;
   }
 };
 
 export { addHandler, getAllhandler };
+
+const transformSessions = (
+  sessions: Array<Prisma.SessionUncheckedCreateInput>
+) => {
+  const newSessions: Array<Session> = [];
+  sessions.forEach((session) => {
+    const dataStartTimeObj = session.startTime
+      ? new Date(session.startTime)
+      : null;
+    const dataEndTimeObj = session.endTime ? new Date(session.endTime) : null;
+    newSessions.push({
+      id: session.id,
+      chargerId: session.chargerId,
+      endTime: dataEndTimeObj?.toISOString() || null,
+      startTime: dataStartTimeObj?.toISOString() || undefined,
+      energyUsedKWh: session.energyUsedKWh || null,
+      pricePerKWh: session.pricePerKWh,
+      totalCost: session.totalCost || null,
+    });
+  });
+  return newSessions;
+};

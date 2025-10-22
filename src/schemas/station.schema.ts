@@ -6,12 +6,12 @@ export const StationSchema = z.object({
   name: z.string(),
   location: z.string(),
 });
-
 export type Station = z.infer<typeof StationSchema>;
 
-export const StationUpdateSchema = StationSchema.omit({
-  id: true,
-}).partial();
+export const CreateStationSchema = StationSchema.omit({ id: true });
+export type CreateStation = z.infer<typeof CreateStationSchema>;
+
+export const StationUpdateSchema = CreateStationSchema.partial();
 export type StationUpdate = z.infer<typeof StationUpdateSchema>;
 
 export const StationWithDetailSchema = StationSchema.extend({
